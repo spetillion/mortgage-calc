@@ -5,29 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mortgage Calculator</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <script>
-        if (window.innerWidth <= 600) {
-            window.location.href = "mobile.html";
-        }
-    </script>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        .input-container, .table-container { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .input-group { flex: 1; text-align: center; }
+        .input-container, .table-container { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 20px; }
+        .input-group { flex: 1 1 45%; text-align: center; margin-bottom: 10px; }
         .input-group label { display: block; margin-bottom: 5px; }
-        .input-group input { width: 15ch; padding: 5px; text-align: center; }
-        button { display: block; width: 100%; margin-top: 10px; padding: 10px; }
-        .results-container { display: flex; justify-content: space-between; margin-top: 20px; text-align: center; }
-        .result-item { flex: 1; }
+        .input-group input { width: 90%; padding: 10px; text-align: center; font-size: 1em; }
+        button { display: block; width: 100%; margin-top: 10px; padding: 15px; font-size: 1.2em; }
+        .results-container { display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 20px; text-align: center; }
+        .result-item { flex: 1 1 45%; }
         .spacer { height: 40px; }
         input[type=number]::-webkit-outer-spin-button,
-        input[type=number]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        @media (max-width: 600px) {
+            .input-group { flex: 1 1 100%; }
+            .result-item { flex: 1 1 100%; }
         }
     </style>
 </head>
@@ -63,9 +57,7 @@
                 <p>$<span id="monthlyPayment">0</span></p>
             </div>
         </div>
-        
         <div class="spacer"></div>
-        
         <div class="table-container">
             <div class="input-group">
                 <label for="mortgage">Mortgage ($)</label>
@@ -84,10 +76,9 @@
                 <input type="number" id="rentalIncome" placeholder="Enter" oninput="calculateTotal()" onkeypress="handleKeyPress(event)">
             </div>
         </div>
-        
         <div class="spacer" style="height: 20px;"></div>
-        <div class="results-container" style="font-size: 1.5em; font-weight: bold;"> 
-            <div class="result-item"> 
+        <div class="results-container" style="font-size: 1.5em; font-weight: bold;">
+            <div class="result-item">
                 <h3>Total Monthly Cost</h3>
                 <p>$<span id="totalMonthlyCost">0</span></p>
             </div>
@@ -99,38 +90,29 @@
             document.getElementById('propertyTax').value = "300";
             document.getElementById('heating').value = "250";
         };
-        
         function calculateMortgage() {
             let listPrice = parseFloat(document.getElementById('listPrice').value);
-            let interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12; 
+            let interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
             let loanTerm = 30 * 12;
-            
             let mortgageAmount = listPrice * 0.8;
             let monthlyPayment = (mortgageAmount * interestRate) / (1 - Math.pow(1 + interestRate, -loanTerm));
-            
             document.getElementById('mortgageAmount').innerText = isNaN(mortgageAmount) || !listPrice ? "0" : mortgageAmount.toFixed(2);
             document.getElementById('monthlyPayment').innerText = isNaN(monthlyPayment) || !listPrice ? "0" : monthlyPayment.toFixed(2);
             document.getElementById('mortgage').value = isNaN(monthlyPayment) ? "" : monthlyPayment.toFixed(2);
-            
             let taxes = ((listPrice - 200000) * 0.02) + 2000;
             let downPayment = (listPrice * 0.2) + taxes;
-            
             document.getElementById('taxes').value = taxes.toFixed(2);
             document.getElementById('downPayment').value = downPayment.toFixed(2);
-            
             calculateTotal();
         }
-        
         function calculateTotal() {
             let mortgage = parseFloat(document.getElementById('mortgage').value) || 0;
             let propertyTax = parseFloat(document.getElementById('propertyTax').value) || 0;
             let heating = parseFloat(document.getElementById('heating').value) || 0;
             let rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
-            
             let totalCost = mortgage + propertyTax + heating - Math.abs(rentalIncome);
             document.getElementById('totalMonthlyCost').innerText = totalCost.toFixed(2);
         }
-        
         function handleKeyPress(event) {
             if (event.key === "Enter") {
                 calculateMortgage();
